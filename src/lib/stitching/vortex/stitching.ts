@@ -44,6 +44,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     }
     extend type AnalyticsRankedStats {
       artwork: Artwork
+      show: PartnerShow
     }
     extend type AnalyticsPartnerSalesStats {
       total(
@@ -261,10 +262,44 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         `,
         resolve: async (parent, _args, context, info) => {
           const id = parent.statType.typeId
+          console.log(parent.statType)
+          const fieldName = parent.statType.__typename
+            .replace("Analytics", "")
+            .toLowerCase()
+          console.log(fieldName)
           return await info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
             fieldName: "artwork",
+            args: {
+              id,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
+        },
+      },
+      show: {
+        fragment: gql`... on AnalyticsRankedStats {
+              statType {
+                ... on AnalyticsShow {
+                  typeId
+                }
+              }
+          }
+        `,
+        resolve: async (parent, _args, context, info) => {
+          const id = parent.statType.typeId
+          console.log(parent.statType)
+          const fieldName = parent.statType.__typename
+            .replace("Analytics", "")
+            .toLowerCase()
+          console.log(fieldName)
+          return await info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "show",
             args: {
               id,
             },
