@@ -25,7 +25,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type AnalyticsHistogramBin {
       minPrice(
         decimal: String = "."
-
         format: String = "%s%v"
         precision: Int = 0
         symbol: String
@@ -34,7 +33,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
 
       maxPrice(
         decimal: String = "."
-
         format: String = "%s%v"
         precision: Int = 0
         symbol: String
@@ -44,7 +42,7 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type Partner {
       analytics: AnalyticsPartnerStats
     }
-    extend type AnalyticsTopArtworks {
+    extend type AnalyticsRankedStats {
       artwork: Artwork
     }
     extend type AnalyticsPartnerSalesStats {
@@ -251,11 +249,18 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         },
       },
     },
-    AnalyticsTopArtworks: {
+    AnalyticsRankedStats: {
       artwork: {
-        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+        fragment: gql`... on AnalyticsRankedStats {
+              statType {
+                ... on AnalyticsArtwork {
+                  typeId
+                }
+              }
+          }
+        `,
         resolve: async (parent, _args, context, info) => {
-          const id = parent.artworkId
+          const id = parent.statType.typeId
           return await info.mergeInfo.delegateToSchema({
             schema: localSchema,
             operation: "query",
