@@ -1,9 +1,9 @@
 type Artist {
-  typeId: String!
+  entityId: String!
 }
 
 type Artwork {
-  typeId: String!
+  entityId: String!
 }
 
 """
@@ -375,7 +375,7 @@ Top artworks, shows, or artists from a partner
 """
 type RankedStats {
   period: QueryPeriodEnum!
-  statType: RankedStatsUnion!
+  rankedEntity: RankedStatsUnion!
   value: Int!
 }
 
@@ -437,5 +437,5 @@ An artwork, artist, or show
 union RankedStatsUnion = Artist | Artwork | Show
 
 type Show {
-  typeId: String!
+  entityId: String!
 }

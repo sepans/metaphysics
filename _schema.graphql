@@ -45,11 +45,11 @@ type AggregationCount {
 }
 
 type AnalyticsArtist {
-  typeId: String!
+  entityId: String!
 }
 
 type AnalyticsArtwork {
-  typeId: String!
+  entityId: String!
 }
 
 # Publish artwork Series Stats
@@ -324,10 +324,9 @@ enum AnalyticsQueryPeriodEnum {
 # Top artworks, shows, or artists from a partner
 type AnalyticsRankedStats {
   period: AnalyticsQueryPeriodEnum!
-  statType: AnalyticsRankedStatsUnion!
+  rankedEntity: AnalyticsRankedStatsUnion!
   value: Int!
-  artwork: Artwork
-  show: PartnerShow
+  entity: Artwork
 }
 
 # The connection type for RankedStats.
@@ -369,7 +368,7 @@ union AnalyticsRankedStatsUnion =
   | AnalyticsShow
 
 type AnalyticsShow {
-  typeId: String!
+  entityId: String!
 }
 
 input ApproveOrderInput {
