@@ -44,9 +44,6 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
     extend type Partner {
       analytics: AnalyticsPartnerStats
     }
-    extend type AnalyticsTopArtworks {
-      artwork: Artwork
-    }
     extend type AnalyticsPartnerSalesStats {
       total(
         decimal: String = "."
@@ -65,8 +62,30 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         thousand: String = ","
       ): String
     }
+    extend type AnalyticsArtwork {
+      artwork: Artwork
+    }
   `,
   resolvers: {
+    AnalyticsArtwork: {
+      artwork: {
+        fragment: `fragment AnalyticsArtworkArtwork on AnalyticsArtwork { entityId }`,
+        resolve: (parent, _args, context, info) => {
+          const id = parent.entityId
+          return info.mergeInfo.delegateToSchema({
+            schema: localSchema,
+            operation: "query",
+            fieldName: "artwork",
+            args: {
+              id,
+            },
+            context,
+            info,
+            transforms: vortexSchema.transforms,
+          })
+        },
+      },
+    },
     AnalyticsPricingContext: {
       appliedFiltersDisplay: {
         fragment: gql`
@@ -251,25 +270,25 @@ export const vortexStitchingEnvironment = (localSchema: GraphQLSchema) => ({
         },
       },
     },
-    AnalyticsTopArtworks: {
-      artwork: {
-        fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
-        resolve: async (parent, _args, context, info) => {
-          const id = parent.artworkId
-          return await info.mergeInfo.delegateToSchema({
-            schema: localSchema,
-            operation: "query",
-            fieldName: "artwork",
-            args: {
-              id,
-            },
-            context,
-            info,
-            transforms: vortexSchema.transforms,
-          })
-        },
-      },
-    },
+    // AnalyticsTopArtworks: {
+    //   artwork: {
+    //     fragment: `fragment AnalyticsTopArtworksArtwork on AnalyticsTopArtworks { artworkId }`,
+    //     resolve: async (parent, _args, context, info) => {
+    //       const id = parent.artworkId
+    //       return await info.mergeInfo.delegateToSchema({
+    //         schema: localSchema,
+    //         operation: "query",
+    //         fieldName: "artwork",
+    //         args: {
+    //           id,
+    //         },
+    //         context,
+    //         info,
+    //         transforms: vortexSchema.transforms,
+    //       })
+    //     },
+    //   },
+    // },
     AnalyticsPartnerSalesStats: {
       total: {
         fragment: gql`
